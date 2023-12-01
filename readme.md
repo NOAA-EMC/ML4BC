@@ -1,4 +1,4 @@
-# GFS Bias Correction using ML
+# GFS Bias Correction using Graph Neural Networks
 
 This project implements a deep learning model in PyTorch for bias correction of GFS (Global Forecast System) temperature forecasts using ERA5 data (ground truth) as a reference. The goal is to reduce forecast biases in GFS 2m temperature forecasts by training a neural network to predict unbiased GFS data based on ERA5 observations.
 
