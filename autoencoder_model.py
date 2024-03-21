@@ -36,7 +36,7 @@ class CompactAutoencoder(nn.Module):
         decoded = self.decoder(encoded)
         return decoded
 
-def get_autoencoder():
+def get_autoencoder(device):
     if torch.cuda.device_count() > 1:
         print("Using", torch.cuda.device_count(), "GPUs!")
         autoencoder = nn.DataParallel(CompactAutoencoder()).to(device)

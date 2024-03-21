@@ -18,19 +18,23 @@ Author: Sadegh Sadeghi Tabas (sadegh.tabas@noaa.gov)
 Revision history:
     -20231029: Sadegh Tabas, initial code
 '''
+import os
+
 import torch
 from torch.utils.data import DataLoader
+import torch.nn as nn
 from tqdm import tqdm
 from autoencoder_model import get_autoencoder
 from netcdf_dataset import NetCDFDataset, check_missing_files, calculate_mean_and_std
 from datetime import date
 
+os.environ['PYTORCH_CUDA_ALLOC_CONF'] = 'expandable_segments:True'
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # device = torch.device("mps")
 
 # Define your data directories
-gfs_root_dir = 'Data/GFS'
-era5_root_dir = 'Data/ERA5'
+gfs_root_dir = '/scratch1/NCEPDEV/nems/Linlin.Cui/Tests/ML4BC/GFS_6h'
+era5_root_dir = '/scratch1/NCEPDEV/nems/Linlin.Cui/Tests/ML4BC/ERA5_6h'
 
 # Define the start and end date for the dataset
 start_date = date(2021, 3, 23)  # Adjust the start date
@@ -56,15 +60,15 @@ seed = 42
 torch.manual_seed(seed)
 
 # Define the loss function and optimizer
-criterion = nn.MSELoss()
-autoencoder = get_autoencoder()  # Accessing the autoencoder model
+loss_fn = nn.MSELoss()
+autoencoder = get_autoencoder(device)  # Accessing the autoencoder model
 optimizer = torch.optim.Adam(autoencoder.parameters(), lr=0.0001)
 
 gfs_data_loader = DataLoader(gfs_dataset, batch_size=batch_size, shuffle=shuffle, num_workers=num_workers)
 era5_data_loader = DataLoader(era5_dataset, batch_size=batch_size, shuffle=shuffle, num_workers=num_workers)
 
 # Training loop with a custom progress bar
-num_epochs = 50
+num_epochs = 20
 for epoch in range(num_epochs):
     autoencoder.train()
     total_loss = 0.0
@@ -74,7 +78,7 @@ for epoch in range(num_epochs):
     for batch_idx, (gfs_data, era5_data) in progress_bar:
         optimizer.zero_grad()
         outputs = autoencoder(gfs_data.to(device))
-        loss = criterion(outputs, era5_data.to(device))
+        loss = loss_fn(outputs, era5_data.to(device))
         loss.backward()
         optimizer.step()
 

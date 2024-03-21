@@ -9,9 +9,11 @@ Revision history:
     -20231029: Sadegh Tabas, initial code
 '''
 
+import os
+
 import netCDF4 as nc
 import numpy as np
-import os
+import torch
 from torch.utils.data import Dataset
 from datetime import timedelta, date
 
@@ -31,7 +33,7 @@ class NetCDFDataset(Dataset):
 
         while current_date <= end_date:
             for hh in ['00', '06', '12', '18']:
-                filename = f'{os.path.basename(root_dir)}.t2m.{current_date.strftime("%Y%m%d")}{hh}.nc'
+                filename = f'{os.path.basename(root_dir).split('_')[0]}.t2m.{current_date.strftime("%Y%m%d")}{hh}.nc'
                 file_list.append(filename)
             current_date += time_step
         
@@ -47,9 +49,9 @@ class NetCDFDataset(Dataset):
         dataset = nc.Dataset(file_path)
         data = dataset.variables['t2m'][:].astype(np.float32)  # Adjust 'data' to the variable name in your file
         dataset.close()
-        
+        #print(file_path) 
         # Reshape the data to (1, 50, 721, 1440)
-        data = data.reshape(1, 50, 721, 1440)
+        data = data.reshape(1, 1, 721, 1440)
 
         if self.transform:
             data = self.normalize_data(data)  # Normalize the data if transform is True
