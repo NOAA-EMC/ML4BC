@@ -49,14 +49,19 @@ class NetCDFDataset(Dataset):
         dataset = nc.Dataset(file_path)
         data = dataset.variables['t2m'][:].astype(np.float32)  # Adjust 'data' to the variable name in your file
         dataset.close()
-        #print(file_path) 
+
         # Reshape the data to (1, 50, 721, 1440)
-        data = data.reshape(1, 1, 721, 1440)
+        #data = data.reshape(1, 50, 721, 1440)
 
         if self.transform:
             data = self.normalize_data(data)  # Normalize the data if transform is True
 
-        return torch.tensor(data)
+        data_tensor = torch.from_numpy(data) if not isinstance(data, torch.Tensor) else data
+
+        # Reshape the data
+        data_reshaped = data_tensor.unsqueeze(0) #Adds channels dimension at the front
+
+        return data_reshaped
 
     def normalize_data(self, data):
         data = (data - self.mean) / self.std
