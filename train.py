@@ -97,17 +97,17 @@ if __name__ == '__main__':
     num_workers = 0
 
     # Get training data
-    gfs_root_dir = '/scratch1/NCEPDEV/nems/Linlin.Cui/Tests/ML4BC/GFS_6h_40steps'
-    era5_root_dir = '/scratch1/NCEPDEV/nems/Linlin.Cui/Tests/ML4BC/ERA5_6h_40steps'
+    gfs_root_dir = '/scratch1/NCEPDEV/nems/Linlin.Cui/Tests/ML4BC/GFS'
+    era5_root_dir = '/scratch1/NCEPDEV/nems/Linlin.Cui/Tests/ML4BC/ERA5'
     start_date = date(2021, 3, 23)  
-    end_date = date(2023, 3, 23) 
+    end_date = date(2023, 3, 31) 
     X_train, y_train = get_data(start_date, end_date, gfs_root_dir, era5_root_dir, batch_size, num_workers, seed)
 
     # Get validation data
-    gfs_root_dir = '/scratch1/NCEPDEV/nems/Linlin.Cui/Tests/ML4BC/GFS_6h_val_40steps'
-    era5_root_dir = '/scratch1/NCEPDEV/nems/Linlin.Cui/Tests/ML4BC/ERA5_6h_val_40steps'
+    gfs_root_dir = '/scratch1/NCEPDEV/nems/Linlin.Cui/Tests/ML4BC/GFS/val_data'
+    era5_root_dir = '/scratch1/NCEPDEV/nems/Linlin.Cui/Tests/ML4BC/ERA5/val_data'
     start_date = date(2023, 4, 1)  
-    end_date = date(2023, 6, 30) 
+    end_date = date(2023, 12, 21) 
     X_val, y_val = get_data(start_date, end_date, gfs_root_dir, era5_root_dir, batch_size, num_workers, seed, train=False, shuffle=False)
 
     # Define the loss function and optimizer

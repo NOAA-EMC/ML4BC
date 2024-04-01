@@ -33,7 +33,7 @@ class NetCDFDataset(Dataset):
 
         while current_date <= end_date:
             for hh in ['00', '06', '12', '18']:
-                filename = f'{os.path.basename(root_dir).split('_')[0]}.t2m.{current_date.strftime("%Y%m%d")}{hh}.nc'
+                filename = f'{os.path.basename(root_dir)}.t2m.{current_date.strftime("%Y%m%d")}{hh}.nc'
                 file_list.append(filename)
             current_date += time_step
         

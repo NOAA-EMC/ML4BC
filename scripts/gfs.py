@@ -83,7 +83,7 @@ def get_gfs_data_by_date(date, outdir):
         ds['longitude'] = ds['longitude'].astype('float32')
         
         mergeDSs.append(ds)
-            
+
         # final_dataset = xr.merge(mergeDSs)
     final_dataset = xr.concat(mergeDSs, dim='time')
     
@@ -91,4 +91,7 @@ def get_gfs_data_by_date(date, outdir):
     output_file_name = f'GFS.{varName}.{date.strftime("%Y%m%d%H")}.nc'
     output_file_path = os.path.join(outdir, output_file_name)
     final_dataset.to_netcdf(output_file_path)
+
+    final_dataset.close()
+
     print(f"Saved the dataset to {output_file_path}")
