@@ -9,7 +9,7 @@ from botocore import UNSIGNED
 import pygrib
 
 gfs_vars = {
-        '2t': [{'typeOfLevel': 'heightAboveGround', 'level': 2, 'name': 't2m'}],
+    '2t': [{'typeOfLevel': 'heightAboveGround', 'level': 2, 'name': 't2m'}],
     #'t': [{'typeOfLevel': 'isobaricInhPa', 'level': 1000},{'typeOfLevel': 'surface', 'level': 0}],
     #'r': [{'typeOfLevel': 'isobaricInhPa', 'level': 1000}],
     #'prmsl': [{'typeOfLevel': 'meanSea', 'level': 0}],
@@ -23,14 +23,21 @@ gfs_vars = {
 s3 = boto3.client('s3', config=Config(signature_version=UNSIGNED))
 bucket_name = 'noaa-gfs-bdp-pds'
 
-def get_gfs_data_by_date(date, outdir):
+def get_gfs_data_by_date(date, outdir, download_dir):
 
-    output_gfs = 'noaa-gfs-bdp-pds-data'
+
+    # Define the output NetCDF file name
+    output_file_name = f'GFS.{date.strftime("%Y%m%d%H")}.nc'
+    output_file_path = os.path.join(outdir, output_file_name)
+
+    if os.path.isfile(output_file_path):
+        print(f'File {output_file_path} exists!')
+        return 0
 
     mergeDSs = []
     for i in np.arange(6, 241, 6):
         key = f"gfs.{date.strftime('%Y%m%d')}/{date.hour:02d}/atmos/gfs.t{date.hour:02d}z.pgrb2.0p25.f{i:03d}"
-        filename = pathlib.Path(output_gfs) / key
+        filename = pathlib.Path(download_dir) / key
         if filename.is_file():
             continue
         filename.parent.mkdir(parents=True, exist_ok=True)
@@ -43,7 +50,7 @@ def get_gfs_data_by_date(date, outdir):
                     print(f'file {key} is not available!')
                     continue
     
-    files = glob.glob(f"{output_gfs}/gfs.{date.strftime('%Y%m%d')}/{date.hour:02d}/atmos/*")
+    files = glob.glob(f"{download_dir}/gfs.{date.strftime('%Y%m%d')}/{date.hour:02d}/atmos/*")
     files.sort()
     for fname in files:
         print(fname)
@@ -87,11 +94,9 @@ def get_gfs_data_by_date(date, outdir):
         # final_dataset = xr.merge(mergeDSs)
     final_dataset = xr.concat(mergeDSs, dim='time')
     
-    # Define the output NetCDF file name
-    output_file_name = f'GFS.{varName}.{date.strftime("%Y%m%d%H")}.nc'
-    output_file_path = os.path.join(outdir, output_file_name)
     final_dataset.to_netcdf(output_file_path)
 
     final_dataset.close()
 
     print(f"Saved the dataset to {output_file_path}")
+
