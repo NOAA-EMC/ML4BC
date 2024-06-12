@@ -30,7 +30,7 @@ def check_missing_files(start_date, end_date, gfs_directory, era5_directory):
 
     print(f"Total number of missing files: {total_missing_files}")
     
-def calculate_mean_and_std(root_dir, start_date, end_date, bbox=None):
+def calculate_mean_and_std(root_dir, start_date, end_date, product='gfs', bbox=None):
     time_step = timedelta(days=1)
     current_date = start_date
     total_count = 0
@@ -40,7 +40,13 @@ def calculate_mean_and_std(root_dir, start_date, end_date, bbox=None):
     while current_date <= end_date:
         print(current_date)
         for hour in ['00', '06', '12', '18']:
-            filename = f"GFS.{current_date.strftime('%Y%m%d')}{hour}.nc"
+            if product == 'gfs':
+                filename = f"GFS.{current_date.strftime('%Y%m%d')}{hour}.nc"
+            elif product == 'era5':
+                filename = f"ERA5.{current_date.strftime('%Y%m%d')}{hour}.nc"
+            else:
+                raise ValueError(f'Product {product} is not supported, choose gfs or era5!')
+
             file_path = os.path.join(root_dir, filename)
 
             if os.path.exists(file_path):
@@ -66,14 +72,14 @@ def calculate_mean_and_std(root_dir, start_date, end_date, bbox=None):
 
 if __name__ == "__main__":
 
-    data_dir = "/scratch1/NCEPDEV/nems/Linlin.Cui/Tests/ML4BC/data"
+    data_dir = "/scratch1/NCEPDEV/nems/Linlin.Cui/Tests/ML4BC/run27/data"
     start_date = datetime(2021, 3, 23)
     end_date = datetime(2021, 3, 31) #included
 
     #bbox = [230, 300, 25, 50]
     #global_means, global_stds = calculate_mean_and_std(data_dir, start_date, end_date, bbox)
 
-    global_means, global_stds = calculate_mean_and_std(data_dir, start_date, end_date)
+    global_means, global_stds = calculate_mean_and_std(data_dir, start_date, end_date, 'gfs')
 
     print(global_means)
     print(global_stds)

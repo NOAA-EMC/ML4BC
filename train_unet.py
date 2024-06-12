@@ -171,9 +171,9 @@ if __name__ == "__main__":
     seed = 42
 
     startdate = datetime(2021, 3, 23)
-    enddate = datetime(2024, 1, 1)
-    print(startdate)
-    print(enddate)
+    enddate = datetime(2024, , 1)
+    #print(startdate)
+    #print(enddate)
 
     data_dir = '/scratch1/NCEPDEV/nems/Linlin.Cui/Tests/ML4BC/run27/data'
     bbox = [230, 300, 25, 50]

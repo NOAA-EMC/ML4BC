@@ -18,6 +18,8 @@ import numpy as np
 import torch
 from torch.utils.data import Dataset
 
+from scripts.get_stats import calculate_mean_and_std
+
 class NetCDFDataset(Dataset):
     def __init__(
         self, 
@@ -32,9 +34,11 @@ class NetCDFDataset(Dataset):
         self.bbox = bbox
         self.transform = transform
 
-        #if self.transform:
-            #self.mean = 278.83097 #279.9124
-            #self.std = 56.02780 #107.1107
+        if self.transform:
+            self.gfs_means, self.gfs_stds = calculate_mean_and_std(data_dir, start_date, end_date, 'gfs', bbox)
+            self.era5_means, self.era5_stds = calculate_mean_and_std(data_dir, start_date, end_date, 'era5', bbox)
+            #print(f'gfs mean: {self.gfs_means}, stds: {self.gfs_stds}')
+            #print(f'era5 mean: {self.era5_means}, stds: {self.era5_stds}')
 
     @staticmethod
     def create_file_list(root_dir, start_date, end_date):
@@ -71,35 +75,15 @@ class NetCDFDataset(Dataset):
         # Load NetCDF data
         ds = xr.open_dataset(filename)
         
-        #Impute NaN vaues for soil moisture and temperature with -999
-        #ds['stl1'] = ds['stl1'].fillna(-999)
-        #ds['swvl1'] = ds['swvl1'].fillna(1)
 
         if self.bbox is not None:
             xmin, xmax, ymin, ymax = self.bbox
-            ds = ds.sel(latitude=slice(ymax, ymin), longitude=slice(xmin, xmax))  #subset the domain
+            values = ds.t2m.sel(latitude=slice(ymax, ymin), longitude=slice(xmin, xmax)).values.astype(np.float32)  #subset the domain
+        else:
+            values = ds.t2m.values.astype(np.float32)
 
-        variables = {
-            't2m': {'transform': True, 'mean': 288.341736, 'std': 10.803136},
-            #'stl1': {'transform': True, 'min': 243.83774, 'max': 319.4},
-            #'tmpsfc': {'transform': True, 'mean': 289.293823, 'std': 12.102620},
-            #'albedo': {'transform': True, 'mean': 10.705595, 'std': 10.58930},
-            #'swvl1': {'transform': True, 'mean': 0.023, 'std': 0.476},
-            #'lsm': {'transform': False},
-        }
-
-        data = []
-
-        for var in variables.keys():
-            values = np.squeeze(ds[var].values.astype(np.float32))  #select f072
-
-            #assert values.shape == (105, 281), f"{filename}: shape of data should be (105, 281)"
-
-            if variables[var]['transform']:
-                data.append(self.normalize_data(values, variables[var]['mean'], variables[var]['std']))  # Normalize the data if transform is True
-            else:
-                data.append(values)
-        data = np.array(data)
+        if self.transform:
+            data = self.normalize_data(values, self.gfs_means, self.gfs_stds)  # Normalize the data if transform is True
 
         data_tensor = torch.from_numpy(data) if not isinstance(data, torch.Tensor) else data
         #print(data_tensor.size())
@@ -118,13 +102,13 @@ class NetCDFDataset(Dataset):
 
         if self.bbox is not None:
             xmin, xmax, ymin, ymax = self.bbox
-            data = ds.t2m.sel(latitude=slice(ymax, ymin), longitude=slice(xmin, xmax)).values.astype(np.float32)  #subset the domain
+            values = ds.t2m.sel(latitude=slice(ymax, ymin), longitude=slice(xmin, xmax)).values.astype(np.float32)  #subset the domain
         else:
-            data = ds.t2m.values.astype(np.float32)
+            values = ds.t2m.values.astype(np.float32)
         #assert data.shape == (105, 281), f"{filename}: shape of data should be (105, 281)"
 
         if self.transform:
-            data = self.normalize_data(data, 288.54418, 10.75397)  # Normalize the data if transform is True
+            data = self.normalize_data(values, self.era5_means, self.era5_stds)  # Normalize the data if transform is True
 
         data_tensor = torch.from_numpy(data) if not isinstance(data, torch.Tensor) else data
 
@@ -141,4 +125,4 @@ class NetCDFDataset(Dataset):
 
     def rescale_data(self, data):
         data = (data * self.std) + self.mean
-        return data
+        return dat
