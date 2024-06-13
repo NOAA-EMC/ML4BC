@@ -81,5 +81,5 @@ if __name__ == "__main__":
 
     global_means, global_stds = calculate_mean_and_std(data_dir, start_date, end_date, 'gfs')
 
-    print(global_means)
-    print(global_stds)
+    np.save('global_means.npy', global_means)
+    np.save('global_stds.npy', global_stds)
