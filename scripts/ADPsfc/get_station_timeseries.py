@@ -1,9 +1,8 @@
 '''
-Purpose: This script gets timeseries for stations within a polygon, given date1, date2,
-         and save it to pickle file.
+Purpose: This script gets sorted timeseries for given time period (startdate, enddate),
+         subsets stations within a polygon, and save it to pickle file.
 8/23/2024, Linlin Cui (linlin.cui@noaa.gov)
 '''
-
 import re
 from datetime import datetime, timedelta
 
@@ -15,12 +14,15 @@ import matplotlib.pyplot as plt
 
 def resample_station(df):
     df.sort_index(inplace=True)
-    resampled_df =  df.resample('6h').bfill()
-    return resampled_df
+    df.reset_index(inplace=True)
+    #resampled_df =  df.resample('6h').bfill()
+    return df
 
-date1 = datetime(2024, 1, 1)
-date2 = datetime(2024, 8, 21, 6)
-datevector = np.arange(date1, date2, np.timedelta64(6, 'h')).astype(datetime)
+
+startdate = datetime(2024, 1, 1)
+enddate = datetime(2024, 8, 21, 6)
+#date2 = datetime(2024, 1, 10, 6)
+datevector = np.arange(startdate, enddate, np.timedelta64(6, 'h')).astype(datetime)
 
 #define polygon [230, 300], [25, 50]
 xmin, xmax, ymin, ymax = -130, -60, 25, 50
@@ -62,7 +64,18 @@ gdf2 = gdf[gdf.within(polygon)]
 
 gdf2.set_index('reporttime', inplace=True)
 df = pd.DataFrame(gdf2.drop(columns='geometry'))
+df_sorted = df.groupby('station').apply(resample_station, include_groups=False)
+df_sorted.to_pickle(f"./2024/gdas.adpsfc.{startdate.strftime('%Y%m%d%H')}-{enddate.strftime('%Y%m%d%H')}_sorted.pkl")
 
-df_resampled = df.groupby('station').apply(resample_station, include_groups=False)
-
-df_resampled.to_pickle(f"./2024/gdas.adpsfc.{date1.strftime('%Y%m%d%H')}-{date2.strftime('%Y%m%d%H')}.pkl")
+##https://stackoverflow.com/questions/18835077/selecting-from-multi-index-pandas
+##df_obs = df_resampled.iloc[df_resampled.index.get_level_values('station') == 'KLIT']  #
+#df_obs = df_sorted.iloc[df_sorted.index.get_level_values('station') == 'KLIT'] 
+#
+#def closet_timestamp(target_date):
+#    closet_index = (df_obs['reporttime'] - target_date).abs().idxmin()
+#    return df_obs.loc[closet_index]
+#
+#
+#date_range = pd.date_range(start='1/1/2024', end='1/3/2024', freq='6h', inclusive='right')
+#breakpoint()
+#df_closest = date_range.to_series().apply(closet_timestamp)
