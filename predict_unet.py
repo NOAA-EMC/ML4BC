@@ -1,3 +1,8 @@
+'''
+Description: This script is to use model weights correcting bias.
+8/23/2024, Linlin Cui(linlin.cui@noaa.gov)
+'''
+
 from datetime import datetime, timedelta
 import pathlib
 

@@ -1,3 +1,7 @@
+'''
+Description: This script is to download ERA5 t2m.
+8/23/2024, Linlin Cui (linlin.cui@noaa.gov)
+'''
 from datetime import datetime
 import cdsapi
 

@@ -1,3 +1,8 @@
+'''
+Description: Prepare training data from GFS, calling functions in gfs.py
+8/23/2024, Linlin Cui (linlin.cui@noaa.gov)
+'''
+
 import os, sys
 import socket
 from datetime import datetime, timedelta
@@ -11,8 +16,8 @@ from gfs import get_gfs_data_by_date
 
 if __name__ == '__main__':
 
-    startdate = datetime(2021, 3, 23)
-    enddate = datetime(2041, 1, 1) #excluded
+    startdate = datetime(2024, 1, 1)
+    enddate = datetime(2024, 6, 1) #excluded
     datevector = np.arange(startdate, enddate, np.timedelta64(6, 'h')).astype(datetime)
     
     outdir = pathlib.Path('/scratch1/NCEPDEV/nems/Linlin.Cui/Tests/ML4BC/data')

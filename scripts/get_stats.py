@@ -1,3 +1,8 @@
+'''
+Description: A utility to calculate mean/std for a given period.
+8/23/2024, Linlin Cui (linlin.cui@noaa.gov)
+
+'''
 import os
 from datetime import timedelta, datetime
 
@@ -74,7 +79,7 @@ if __name__ == "__main__":
 
     data_dir = "/scratch1/NCEPDEV/nems/Linlin.Cui/Tests/ML4BC/run27/data"
     start_date = datetime(2021, 3, 23)
-    end_date = datetime(2021, 3, 31) #included
+    end_date = datetime(2023, 12, 31) #included
 
     #bbox = [230, 300, 25, 50]
     #global_means, global_stds = calculate_mean_and_std(data_dir, start_date, end_date, bbox)

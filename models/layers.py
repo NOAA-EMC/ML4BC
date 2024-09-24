@@ -1,3 +1,8 @@
+'''
+Description: Implementation of CBAM. This script is straight from  SmaAT-UNet:
+    https://github.com/HansBambel/SmaAt-UNet/blob/master/models/layers.py
+'''
+
 import torch
 from torch import nn
 import torch.nn.functional as F

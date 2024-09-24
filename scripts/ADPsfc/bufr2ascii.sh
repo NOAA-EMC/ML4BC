@@ -1,6 +1,6 @@
 #!/bin/bash
 ###############################################################
-#Purpose: This script is for converting ADPsfc bufr file to ASCII file.
+#Description: This script is for converting ADPsfc bufr file to ASCII file.
 #8/23/2024, Linlin Cui (linlin.cui@noaa.gov)
 ###############################################################
 

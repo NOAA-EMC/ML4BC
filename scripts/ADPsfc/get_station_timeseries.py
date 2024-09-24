@@ -1,5 +1,5 @@
 '''
-Purpose: This script gets sorted timeseries for given time period (startdate, enddate),
+Description: This script gets sorted timeseries for given time period (startdate, enddate),
          subsets stations within a polygon, and save it to pickle file.
 8/23/2024, Linlin Cui (linlin.cui@noaa.gov)
 '''

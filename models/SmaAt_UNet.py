@@ -1,10 +1,13 @@
+'''
+Description: UNet architecture with CBAM. This script is straight from  SmaAT-UNet:
+    https://github.com/HansBambel/SmaAt-UNet/tree/master/models
+'''
 from torch import nn
 from models.unet_parts import OutConv
 from models.unet_parts_depthwise_separable import DoubleConvDS, UpDS, DownDS
 from models.layers import CBAM
 
 
-# Taken from https://github.com/HansBambel/SmaAt-UNet/tree/master/models
 class SmaAt_UNet(nn.Module):
     def __init__(
         self,

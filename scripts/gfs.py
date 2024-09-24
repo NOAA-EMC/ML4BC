@@ -1,3 +1,9 @@
+'''
+Description: A function used in gen_dataset_from_gfs.py to download GFS data from s3 bucket and
+             generate NetCDF files for training.
+8/23/2024, Linlin Cui(linlin.cui@noaa.gov)
+'''
+
 import os
 import pathlib
 import glob
@@ -35,6 +41,7 @@ def get_gfs_data_by_date(date, outdir, download_dir):
         return 0
 
     mergeDSs = []
+    # download fh 6 to 240 at 6-hr interval
     for i in np.arange(6, 241, 6):
         key = f"gfs.{date.strftime('%Y%m%d')}/{date.hour:02d}/atmos/gfs.t{date.hour:02d}z.pgrb2.0p25.f{i:03d}"
         filename = pathlib.Path(download_dir) / key
@@ -50,7 +57,10 @@ def get_gfs_data_by_date(date, outdir, download_dir):
                     print(f'file {key} is not available!')
                     continue
     
-    files = glob.glob(f"{download_dir}/gfs.{date.strftime('%Y%m%d')}/{date.hour:02d}/atmos/*")
+    #files = glob.glob(f"{download_dir}/gfs.{date.strftime('%Y%m%d')}/{date.hour:02d}/atmos/*")
+
+    # get data from f072 for training with single FH
+    files = glob.glob(f"{download_dir}/gfs.{date.strftime('%Y%m%d')}/{date.hour:02d}/atmos/gfs.t{date.hour:02d}z.pgrb2.0p25.f072")
     files.sort()
     for fname in files:
         print(fname)

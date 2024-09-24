@@ -1,3 +1,12 @@
+'''
+Description: This script interpolates model grid to stations with the nearest method.
+             The function used is scipy.interpolate.RegularGridInterpolator:
+             https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.RegularGridInterpolator.html
+
+             Input: The input is in Numpy npy format, and is from ../../predict_unet.py
+                    A shapefile 'adpsfc_stations_conus.shp' is to provide lon/lat information of stations.
+8/23/2024, Linlin Cui (linlin.cui.noaa.gov)
+'''
 from datetime import datetime, timedelta
 
 import numpy as np
@@ -6,14 +15,14 @@ import matplotlib.pyplot as plt
 import geopandas as gpd
 import scipy as sp
 
-def get_dataarray(values, lon, lat):
-   da = xr.DataArray(
-       data=values,
-       dims=("latitude", "longitude"),
-       coords={"latitude": lat, "longitude": lon},
-   )
-
-   return da
+#def get_dataarray(values, lon, lat):
+#   da = xr.DataArray(
+#       data=values,
+#       dims=("latitude", "longitude"),
+#       coords={"latitude": lat, "longitude": lon},
+#   )
+#
+#   return da
 
 #ftime = '192'
 date1 = datetime(2024, 1, 1)

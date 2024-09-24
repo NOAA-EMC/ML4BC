@@ -1,3 +1,8 @@
+'''
+Description: This script is to prepare training data from ERA5.
+8/23/2024, Linlin Cui (linlin.cui@noaa.gov)
+'''
+
 from datetime import datetime, timedelta
 import pathlib
 
@@ -7,14 +12,14 @@ import xarray as xr
 if __name__ == '__main__':
 
     startdate = datetime(2024, 1, 1)
-    enddate = datetime(2024, 2, 1) #excluded
+    enddate = datetime(2024, 6, 1) #excluded
     datevector = np.arange(startdate, enddate, np.timedelta64(6, 'h')).astype(datetime)
 
     outdir = pathlib.Path('/scratch1/NCEPDEV/nems/Linlin.Cui/Tests/ML4BC/data_test')
     outdir.mkdir(parents=True, exist_ok=True)
 
     #select f072 
-    dt = 3
+    dt = 3 #unit: days
 
     #read era5
     ds = xr.open_dataset('era5_surface_t2m_20240101-20240203.nc')

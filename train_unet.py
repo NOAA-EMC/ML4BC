@@ -1,3 +1,8 @@
+'''
+Description: This script is to train UNet model.
+8/23/2024, Linlin Cui (linlin.cui@noaa.gov)
+'''
+
 import os
 from datetime import datetime, timedelta
 import time

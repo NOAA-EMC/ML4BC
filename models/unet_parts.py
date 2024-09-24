@@ -1,3 +1,8 @@
+'''
+Description: Parts of the Original UNet architecture. This script is straight from  Pytorch-UNet:
+    https://github.com/milesial/Pytorch-UNet/blob/master/unet/unet_parts.py
+'''
+
 """ Parts of the U-Net model """
 
 import torch

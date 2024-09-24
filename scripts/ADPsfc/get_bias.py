@@ -1,3 +1,14 @@
+'''
+Description: This script calcuates the bias with 'model minus observation' for each station
+             for the period defined as variable 'datevector'.
+
+             Inputs:
+               - station data is 2024/gdas.adpsfc.2024010100-2024082106_sorted.pkl, which is the
+                 output from get_station_timeseries.py
+               - A shapefile for station information: adpsfc_stations_conus.shp
+               - model outputs from model2obs.py
+8/23/2024, Linlin Cui (linlin.cui@noaa.gov)
+'''
 import re
 from datetime import datetime, timedelta
 from time import time
@@ -7,8 +18,8 @@ import pandas as pd
 import geopandas as gpd
 import matplotlib.pyplot as plt
 
-
-startdate = datetime(2024, 1, 1)
+cycle = 0
+startdate = datetime(2024, 1, 1, cycle)
 enddate = datetime(2024, 6, 1)
 datevector = np.arange(startdate, enddate, np.timedelta64(1, 'D')).astype(datetime)
 
@@ -30,7 +41,7 @@ for i, st in enumerate(gfs_st.station):
 
     print(f'{i+1} of {len(gfs_st)} stations')
 
-    if not st.startswith('K'):   #station name starts with 'K' is in US
+    if not st.startswith('K'):   #station name starts with 'K' is in USA
         continue
 
     print(st)
@@ -92,32 +103,22 @@ for i, st in enumerate(gfs_st.station):
 
 gdf_00 = gpd.GeoDataFrame(bias_all_00)
 gdf_00.set_crs('epsg:4326', inplace=True)
-gdf_00.to_file(f'2024/bias_cycle00_{startdate.strftime("%Y%m%d%H")}-{(enddate-timedelta(hours=6)).strftime("%Y%m%d%H")}.shp')
+gdf_00.to_file(f'2024/bias_cycle{cycle:02d}_hour06_{startdate.strftime("%Y%m%d%H")}-{(enddate-timedelta(hours=6)).strftime("%Y%m%d%H")}.shp')
 
 gdf_06 = gpd.GeoDataFrame(bias_all_06)
 gdf_06.set_crs('epsg:4326', inplace=True)
-gdf_06.to_file(f'2024/bias_cycle06_{startdate.strftime("%Y%m%d%H")}-{(enddate-timedelta(hours=6)).strftime("%Y%m%d%H")}.shp')
+gdf_06.to_file(f'2024/bias_cycle{cycle:02d}_hour12_{startdate.strftime("%Y%m%d%H")}-{(enddate-timedelta(hours=6)).strftime("%Y%m%d%H")}.shp')
 
 gdf_12 = gpd.GeoDataFrame(bias_all_12)
 gdf_12.set_crs('epsg:4326', inplace=True)
-gdf_12.to_file(f'2024/bias_cycle12_{startdate.strftime("%Y%m%d%H")}-{(enddate-timedelta(hours=6)).strftime("%Y%m%d%H")}.shp')
+gdf_12.to_file(f'2024/bias_cycle{cycle:02d}_hour18_{startdate.strftime("%Y%m%d%H")}-{(enddate-timedelta(hours=6)).strftime("%Y%m%d%H")}.shp')
 
 gdf_18 = gpd.GeoDataFrame(bias_all_18)
 gdf_18.set_crs('epsg:4326', inplace=True)
-gdf_18.to_file(f'2024/bias_cycle18_{startdate.strftime("%Y%m%d%H")}-{(enddate-timedelta(hours=6)).strftime("%Y%m%d%H")}.shp')
+gdf_18.to_file(f'2024/bias_cycle{cycle:02d}_hour24_{startdate.strftime("%Y%m%d%H")}-{(enddate-timedelta(hours=6)).strftime("%Y%m%d%H")}.shp')
 
 gdf_all = gpd.GeoDataFrame(bias_all)
 gdf_all.set_crs('epsg:4326', inplace=True)
-gdf_all.to_pickle(f'2024/bias_{startdate.strftime("%Y%m%d%H")}-{(enddate-timedelta(hours=6)).strftime("%Y%m%d%H")}.pkl')
+gdf_all.to_pickle(f'2024/bias_cycle{cycle:02d}_{startdate.strftime("%Y%m%d%H")}-{(enddate-timedelta(hours=6)).strftime("%Y%m%d%H")}.pkl')
 
 print(f'Total time: {(time() - t0)/60} mins')
-
-#nx = bias.shape[-1]
-#x = (np.arange(nx) + 1) * 6
-#breakpoint()
-#plt.plot(x, bias[:,0,:].mean(axis=0), color='k', label='gfs-obs', marker = '.', markerfacecolor='w')
-#plt.plot(x, bias[:,1,:].mean(axis=0), color='r', label='unet-obs', marker = '.', markerfacecolor='w')
-#plt.plot(x, bias[:,2,:].mean(axis=0), color='b', label='era5-obs', marker = '.', markerfacecolor='w')
-#plt.legend()
-#plt.savefig('comparison_with_obs_station_KLIT_Jan_nearest.png')
-

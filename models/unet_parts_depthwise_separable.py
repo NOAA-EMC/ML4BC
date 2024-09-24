@@ -1,4 +1,7 @@
-""" Parts of the U-Net model """
+'''
+Description: Parts of the SmaAt_UNet. This script is straight from  SmaAt_UNet:
+    https://github.com/HansBambel/SmaAt-UNet/blob/master/models/unet_parts_depthwise_separable.py
+'''
 # Base model taken from: https://github.com/milesial/Pytorch-UNet
 import torch
 import torch.nn as nn
@@ -22,7 +25,7 @@ class DoubleConvDS(nn.Module):
                 padding=1,
             ),
             nn.BatchNorm2d(mid_channels),
-            nn.ReLU(inplace=True),
+            nn.LeakyReLU(inplace=True),
             DepthwiseSeparableConv(
                 mid_channels,
                 out_channels,
@@ -31,7 +34,7 @@ class DoubleConvDS(nn.Module):
                 padding=1,
             ),
             nn.BatchNorm2d(out_channels),
-            nn.ReLU(inplace=True),
+            nn.LeakyReLU(inplace=True),
         )
 
     def forward(self, x):
