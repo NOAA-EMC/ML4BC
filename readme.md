@@ -24,10 +24,11 @@ The GFS is a widely used weather forecasting system, but it may contain biases i
 
 ### Prerequisites
 
-Before using this project, make sure you have the following installed:
+Before using this project, make sure you have a workspace with the following libraries installed:
 
 - Python 3.x
 - PyTorch
 - NumPy
+- Xarray
 - Other required libraries (e.g., Matplotlib, Pandas)
 
