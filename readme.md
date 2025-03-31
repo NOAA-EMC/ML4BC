@@ -16,6 +16,7 @@ This project implements a deep learning model in PyTorch for bias correction of 
 - [Model Architecture](#model-architecture)
 - [Contributing](#contributing)
 - [License](#license)
+- [Citation](#citation)
 
 ## Background
 
@@ -83,13 +84,66 @@ GFS and ERA5 downloading and pairing, submit the jobcard with python:
 
 To train the model on Hera with GPU, change the path for the "data_dir" in train_unet.py and set up a batch script to run the train_unet.py
 
+An example batch script named train_unet.sh for executing on NOAA Hera utilizing 8 GPUs:
+
+    #!/bin/bash
+    
+    process='unet_training'
+    
+    #SBATCH -A $ACCNT
+    #SBATCH -p fge
+    #SBATCH -q gpuwf
+    #SBATCH -J {process}
+    #SBATCH -N 1
+    #SBATCH -n 1
+    #SBATCH --ntasks-per-node=8
+    #SBATCH --time=168:00:00
+    #SBATCH -o {process}_output.out
+    #SBATCH -e {process}_error.out
+    
+    # Activate the Conda environment
+    conda activate ml4bc
+    
+    # Execute the script
+    python3 train_unet.py
+
+Submit the job:
+
+    sbatch train_unet.sh
+
 ![Capture1](https://github.com/user-attachments/assets/bfa78129-34e5-4d62-9732-ee7f5d828760)
 
 ### Bias Correction
 
-After model training, the final model weights were used to correct the GFS T2m for the forecast hours 6 to 240 hours
+After training the model, the final model weights were applied to correct the GFS T2m forecasts for lead times ranging from 6 to 240 hours
 
 To do bias correction with the final model weights on Hera, change the path for the "data_dir" in predict_unet.py and set up a batch script to run the predict_unet.py
+
+An example batch script named predict_unet.sh for executing on NOAA Hera utilizing a single CPU:
+
+    #!/bin/bash
+    
+    process='unet_predict'
+    
+    #SBATCH -A $ACCNT
+    #SBATCH -p hera
+    #SBATCH -J {process}
+    #SBATCH -N 1
+    #SBATCH -n 1
+    #SBATCH --cpus-per-task=1
+    #SBATCH --time=8:00:00
+    #SBATCH -o {process}_output.out
+    #SBATCH -e {process}_error.out
+    
+    # Activate the Conda environment
+    conda activate ml4bc
+    
+    # Execute the script
+    python3 predict_unet.py
+
+Submit the job:
+
+    sbatch predict_unet.sh
 
 ## Model Architecture
 
@@ -103,9 +157,12 @@ The architecture of BC-Unet. Arrows represent the operation pass. Blue boxes are
 
 ## Contributing
 
-The authors thank Alicia Bentley and Wei Li at the NOAA Environmental Modeling Center for internal reviews. The authors acknowledge the high performance computing resources provided by the NOAA Research and Development High Performance Computing Program. The project described in this article was supported by the Inflation Reduction Act and the NOAA Software Engineering for Novel Architectures (SENA) project. The scientific results and conclusions, as well as any views or opinions expressed herein, are those of the authors and do not necessarily reflect the views of NOAA or the Department of Commerce.
+Users are encouraged to create an issue from [here](https://github.com/NOAA-EMC/ML4BC/issues) for their questions and to create a pull request if they plan to make code updates. The code managers will review and test the code before committing them to the repository.
 
 ## License
 
 https://creativecommons.org/publicdomain/zero/1.0/
 
+## Citation 
+
+Cui L., Wang J., Tabas S. Carley J.: A Machine Learning-Based Bias Correction Method for Global Forecast System Products, NOAA Office Note, https://doi.org/10.25923/6266-e822, 2025
